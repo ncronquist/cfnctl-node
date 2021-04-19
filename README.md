@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`cfnctl hello [FILE]`](#cfnctl-hello-file)
 * [`cfnctl help [COMMAND]`](#cfnctl-help-command)
+* [`cfnctl plan [FILE]`](#cfnctl-plan-file)
 
 ## `cfnctl hello [FILE]`
 
@@ -67,4 +68,20 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+
+## `cfnctl plan [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ cfnctl plan [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/plan.ts](https://github.com/ncronquist/cfnctl-node/blob/v0.0.0/src/commands/plan.ts)_
 <!-- commandsstop -->
