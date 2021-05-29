@@ -1,0 +1,14 @@
+- stack: cfnctl-dev-vpc
+  template_file: "./cloudformation/vpc-4azs.yaml"
+  parameter_overrides:
+    ClassB: 101
+  tags:
+    Owner: Nick Cronquist
+    Environment: dev
+- stack: cfnctl-prod-vpc
+  template_file: "./cloudformation/vpc-4azs.yaml"
+  parameter_overrides:
+    ClassB: 1
+  tags:
+    Owner: Nick Cronquist
+    Environment: prod

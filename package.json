@@ -8,15 +8,22 @@
   },
   "bugs": "https://github.com/ncronquist/cfnctl-node/issues",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.13.1",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^3",
+    "inquirer": "^8.0.0",
+    "joi": "^17.4.0",
+    "js-yaml": "^4.1.0",
     "tslib": "^1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@oclif/test": "^1",
     "@types/chai": "^4",
+    "@types/inquirer": "^7.3.1",
+    "@types/joi": "^17.2.3",
+    "@types/js-yaml": "^4.0.1",
     "@types/mocha": "^5",
     "@types/node": "^10",
     "chai": "^4",

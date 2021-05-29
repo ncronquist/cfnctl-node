@@ -85,3 +85,20 @@ OPTIONS
 
 _See code: [src/commands/plan.ts](https://github.com/ncronquist/cfnctl-node/blob/v0.0.0/src/commands/plan.ts)_
 <!-- commandsstop -->
+
+## References
+
+- [docs: oclif][docs-oclif]
+- [docs: inquirer][docs-inquirer]
+- [docs: joi][docs-joi]
+- [docs: @aws-sdk/client-cloudformation][docs-cfn]
+- [blog: Types vs Interfaces in TypeScript][blog-types-vs-interfaces]
+- [blog: How to Use TypeScript Type Guards][blog-type-guards]
+
+
+[docs-oclif]: https://oclif.io/docs/commands
+[docs-inquirer]: https://github.com/SBoudrias/Inquirer.js
+[docs-joi]: https://joi.dev/api/?v=17.4.0
+[docs-cfn]: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudformation/index.html
+[blog-types-vs-interfaces]: https://blog.logrocket.com/types-vs-interfaces-in-typescript/
+[blog-type-guards]: https://rangle.io/blog/how-to-use-typescript-type-guards/
