@@ -4,9 +4,10 @@ import * as yaml from 'js-yaml';
 import * as Joi from 'joi';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CloudFormationClient, CreateChangeSetCommand, CreateChangeSetCommandInput, CreateChangeSetCommandOutput, DescribeChangeSetCommand, DescribeChangeSetCommandInput, DescribeChangeSetCommandOutput, Parameter } from '@aws-sdk/client-cloudformation';
+import { CloudFormation, CloudFormationClient, CreateChangeSetCommand, CreateChangeSetCommandInput, CreateChangeSetCommandOutput, DescribeChangeSetCommand, DescribeChangeSetCommandInput, DescribeChangeSetCommandOutput, Parameter } from '@aws-sdk/client-cloudformation';
 
 const cfnClient = new CloudFormationClient({});
+const cloudformation = new AWS.CloudFormation();
 
 interface CfnctlConfig {
   stack: string;
@@ -177,6 +178,8 @@ export default class Plan extends Command {
     // createStackCommand.input()
     const { Id: changeSetName, StackId: stackName } = await createChangeSet(csParams);
     // console.log('CS OUTPUT:', csOutput);
+
+    await CloudFormation.waitFor()
 
     const describeCsParams: DescribeChangeSetCommandInput = {
       ChangeSetName: changeSetName,
