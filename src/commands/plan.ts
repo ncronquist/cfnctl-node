@@ -4,11 +4,22 @@ import * as yaml from 'js-yaml';
 import * as Joi from 'joi';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CloudFormation, CloudFormationClient, CreateChangeSetCommand, CreateChangeSetCommandInput, CreateChangeSetCommandOutput, DescribeChangeSetCommand, DescribeChangeSetCommandInput, DescribeChangeSetCommandOutput, Parameter } from '@aws-sdk/client-cloudformation';
+import { 
+  CloudFormationClient, 
+  CreateChangeSetCommand, 
+  CreateChangeSetCommandInput, 
+  CreateChangeSetCommandOutput,
+  DeleteChangeSetCommand,
+  DeleteChangeSetCommandInput,
+  DeleteChangeSetCommandOutput, 
+  DescribeChangeSetCommand, 
+  DescribeChangeSetCommandInput, 
+  DescribeChangeSetCommandOutput, 
+  ExecutionStatus, 
+  Parameter 
+} from '@aws-sdk/client-cloudformation';
 
 const cfnClient = new CloudFormationClient({});
-const cloudformation = new AWS.CloudFormation();
-
 interface CfnctlConfig {
   stack: string;
   template_file: string;
@@ -24,6 +35,10 @@ const cfnctlConfigSchema = Joi.array().items(
     tags: Joi.object().unknown(true)
   })
 )
+
+function sleep(delay: number) {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
 
 function configListStacks(config: [CfnctlConfig]) {
   return () => {
@@ -59,11 +74,15 @@ async function createChangeSet(params: CreateChangeSetCommandInput): Promise<Cre
 }
 
 async function describeChangeSet(params: DescribeChangeSetCommandInput): Promise<DescribeChangeSetCommandOutput> {
-  // let response: DescribeChangeSetCommandOutput;
-
   const describeChangeSetCmd = new DescribeChangeSetCommand(params);
 
   return await cfnClient.send(describeChangeSetCmd)
+}
+
+async function deleteChangeSet(params: DeleteChangeSetCommandInput): Promise<DeleteChangeSetCommandOutput> {
+  const deleteChangeSetCmd = new DeleteChangeSetCommand(params);
+
+  return await cfnClient.send(deleteChangeSetCmd)
 }
 
 /**
@@ -161,32 +180,43 @@ export default class Plan extends Command {
       parameterOverrides.push({ParameterKey: key, ParameterValue: val});
     })
 
-    console.log('Stack:', stack);
-    console.log('STACK CONFIG:', stackConfig);
+    // console.log('Stack:', stack);
+    // console.log('STACK CONFIG:', stackConfig);
 
+    const now = new Date();
+    const dateString = `cfn-${now.toISOString().replace(/:/g, '-').replace(/\./g, '-')}`
 
-    // const client = new CloudFormationClient({});
     const csParams: CreateChangeSetCommandInput = {
       StackName: stackConfig.stack,
-      ChangeSetName: 'test',
+      ChangeSetName: dateString,
       // ChangeSetType: 'CREATE',
       TemplateBody: templateBody,
       Parameters: parameterOverrides,
     }
-    // console.log('CS PARAMS:', csParams)
-    // const createStackCommand = new CreateChangeSetCommand(csParams);
-    // createStackCommand.input()
+
     const { Id: changeSetName, StackId: stackName } = await createChangeSet(csParams);
-    // console.log('CS OUTPUT:', csOutput);
 
-    await CloudFormation.waitFor()
 
-    const describeCsParams: DescribeChangeSetCommandInput = {
+    const changeSetId = {
       ChangeSetName: changeSetName,
       StackName: stackName
     }
 
-    const dcsOutput = await describeChangeSet(describeCsParams);
-    console.log('DCS OUTPUT:', dcsOutput);
+    let createStatus: ExecutionStatus | string = ExecutionStatus.UNAVAILABLE;
+    let dcsOutput;
+
+    process.stderr.write('Creating change set ');
+    while (createStatus != ExecutionStatus.AVAILABLE) {
+      dcsOutput = await describeChangeSet(changeSetId);
+      createStatus = dcsOutput.ExecutionStatus || ExecutionStatus.UNAVAILABLE;
+      process.stderr.write('.');
+      await sleep(2000);
+    }
+    
+    // console.log(JSON.stringify(dcsOutput, null, 2));
+    console.error('');
+    console.dir(dcsOutput, {depth: null, colors: true});
+
+    await deleteChangeSet(changeSetId);
   }
 }
